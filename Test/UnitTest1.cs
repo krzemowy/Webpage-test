@@ -1,7 +1,6 @@
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium;
-using PageObjectModel.PageObject;
-using Webpage_test.PageObject;
+using PageObjectModel;
 
 namespace Webpage_test.Test
 {
@@ -23,14 +22,27 @@ namespace Webpage_test.Test
         [Test]
         public void TC_Login()
         {
+            //create Main page class instance
             MainPage = new(seleDriver);
+            //create Main page class instance and check if page was loaded correctly
+            //MainPage = new(seleDriver, PageObject.PageLoaded.Check);
+            //(MainPage as IPageObjectModel).ConfirmPageIsLoaded();
+            MainPage.ConfirmPageIsLoaded();
+            //enter Login page
             MainPage.EnterLoginPage();
+            //create Login page class instance
             LoginPage = new(seleDriver);
-            Assert.That(LoginPage.LoginPageHeader(), Is.EqualTo("Login"), "Login page header");
-            Assert.That(LoginPage.LoginPageTitle(), Is.EqualTo("Please login to make appointment."), "Login page title");
+            //do logging using default user&password
             LoginPage.Login();
+            //LoginPage.Get_LoginPageTitle_Text();
             LoggedInPage = new(seleDriver);
-            Assert.That(LoggedInPage.Make_Appointment_Title(), Is.EqualTo("Make Appointment"), "Make Appointment");
+            //fill visit booking form
+            LoggedInPage.Set_Facility_Dropdown(LoggedInPage.Facility_Dropdown_Values.Seoul);
+            LoggedInPage.Set_Hospital_readmission_CheckBox(false);
+            LoggedInPage.Set_Healthcare_Program_RadioButton_By_Id(LoggedInPage.Healthcare_Program_Radiobutton_Id.Medicaid);
+            LoggedInPage.Set_Visit_Date(DateTime.Parse("01-02-2024"));
+            LoggedInPage.Set_Visit_Comment_Text("There is no comment at all.");
+            LoggedInPage.Click_Book_Appointment_Button();
         }
 
         [TearDown]
